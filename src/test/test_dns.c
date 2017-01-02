@@ -16,11 +16,11 @@ NS(test_main)(void *arg)
 {
   (void)arg;
 
-  uint32_t ttl_mid = MIN_DNS_TTL / 2 + MAX_DNS_TTL / 2;
+  uint32_t ttl_mid = MIN_DNS_TTL_TO_REPORT / 2 + MAX_DNS_TTL_TO_REPORT / 2;
 
-  tt_int_op(dns_clip_ttl(MIN_DNS_TTL - 1),==,MIN_DNS_TTL);
-  tt_int_op(dns_clip_ttl(ttl_mid),==,ttl_mid);
-  tt_int_op(dns_clip_ttl(MAX_DNS_TTL + 1),==,MAX_DNS_TTL);
+  tt_int_op(dns_clip_ttl(MIN_DNS_TTL_TO_REPORT - 1),==,MIN_DNS_TTL_TO_REPORT);
+  tt_int_op(dns_clip_ttl(ttl_mid),==,MAX_DNS_TTL_TO_REPORT);
+  tt_int_op(dns_clip_ttl(MAX_DNS_TTL_TO_REPORT + 1),==,MAX_DNS_TTL_TO_REPORT);
 
   done:
   return;
@@ -35,11 +35,13 @@ NS(test_main)(void *arg)
 {
   (void)arg;
 
-  uint32_t ttl_mid = MIN_DNS_TTL / 2 + MAX_DNS_ENTRY_AGE / 2;
+  uint32_t ttl_mid = MIN_DNS_TTL_TO_BELIEVE / 2 + MAX_DNS_TTL_TO_BELIEVE / 2;
 
-  tt_int_op(dns_get_expiry_ttl(MIN_DNS_TTL - 1),==,MIN_DNS_TTL);
+  tt_int_op(dns_get_expiry_ttl(MIN_DNS_TTL_TO_BELIEVE - 1),
+            ==,MIN_DNS_TTL_TO_BELIEVE);
   tt_int_op(dns_get_expiry_ttl(ttl_mid),==,ttl_mid);
-  tt_int_op(dns_get_expiry_ttl(MAX_DNS_ENTRY_AGE + 1),==,MAX_DNS_ENTRY_AGE);
+  tt_int_op(dns_get_expiry_ttl(MAX_DNS_TTL_TO_BELIEVE + 1),==,
+            MAX_DNS_TTL_TO_BELIEVE);
 
   done:
   return;

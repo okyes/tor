@@ -247,12 +247,14 @@ has_dns_init_failed(void)
 uint32_t
 dns_clip_ttl(uint32_t ttl)
 {
-  if (ttl < MIN_DNS_TTL)
-    return MIN_DNS_TTL;
-  else if (ttl > MAX_DNS_TTL)
-    return MAX_DNS_TTL;
+  /* This logic is a defense against "DefectTor" DNS-based traffic
+   * confirmation attacks, as in https://nymity.ch/tor-dns/tor-dns.pdf .
+   * We only give two values: a "low" value and a "high" value.
+   */
+  if (ttl < MIN_DNS_TTL_TO_REPORT)
+    return MIN_DNS_TTL_TO_REPORT;
   else
-    return ttl;
+    return MAX_DNS_TTL_TO_REPORT;
 }
 
 /** Helper: Given a TTL from a DNS response, determine how long to hold it in
@@ -260,10 +262,10 @@ dns_clip_ttl(uint32_t ttl)
 STATIC uint32_t
 dns_get_expiry_ttl(uint32_t ttl)
 {
-  if (ttl < MIN_DNS_TTL)
-    return MIN_DNS_TTL;
-  else if (ttl > MAX_DNS_ENTRY_AGE)
-    return MAX_DNS_ENTRY_AGE;
+  if (ttl < MIN_DNS_TTL_TO_BELIEVE)
+    return MIN_DNS_TTL_TO_BELIEVE;
+  else if (ttl > MAX_DNS_TTL_TO_BELIEVE)
+    return MAX_DNS_TTL_TO_BELIEVE;
   else
     return ttl;
 }
