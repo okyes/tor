@@ -13,15 +13,9 @@
 #define TOR_DNS_H
 
 /** Lowest value for DNS ttl that a server will give. */
-#define MIN_DNS_TTL_TO_REPORT (5*60)
+#define MIN_DNS_TTL_AT_EXIT (5*60)
 /** Highest value for DNS ttl that a server will give. */
-#define MAX_DNS_TTL_TO_REPORT (60*60)
-
-/** How small can a TTL be before we stop believing it?  Provides rudimentary
- * pinning. */
-#define MIN_DNS_TTL_TO_BELIEVE 60
-/** How large can a TTL be before we stop believing it? */
-#define MAX_DNS_TTL_TO_BELIEVE (3*60*60)
+#define MAX_DNS_TTL_AT_EXIT (60*60)
 
 /** How long do we keep DNS cache entries before purging them (regardless of
  * their TTL)? */
@@ -48,8 +42,6 @@ void dump_dns_mem_usage(int severity);
 
 #ifdef DNS_PRIVATE
 #include "dns_structs.h"
-
-STATIC uint32_t dns_get_expiry_ttl(uint32_t ttl);
 
 MOCK_DECL(STATIC int,dns_resolve_impl,(edge_connection_t *exitconn,
 int is_resolve,or_circuit_t *oncirc, char **hostname_out,

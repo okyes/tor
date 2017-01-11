@@ -243,7 +243,8 @@ has_dns_init_failed(void)
 }
 
 /** Helper: Given a TTL from a DNS response, determine what TTL to give the
- * OP that asked us to resolve it. */
+ * OP that asked us to resolve it, and how long to cache that record
+ * ourselves. */
 uint32_t
 dns_clip_ttl(uint32_t ttl)
 {
@@ -251,23 +252,10 @@ dns_clip_ttl(uint32_t ttl)
    * confirmation attacks, as in https://nymity.ch/tor-dns/tor-dns.pdf .
    * We only give two values: a "low" value and a "high" value.
    */
-  if (ttl < MIN_DNS_TTL_TO_REPORT)
-    return MIN_DNS_TTL_TO_REPORT;
+  if (ttl < MIN_DNS_TTL_AT_EXIT)
+    return MIN_DNS_TTL_AT_EXIT;
   else
-    return MAX_DNS_TTL_TO_REPORT;
-}
-
-/** Helper: Given a TTL from a DNS response, determine how long to hold it in
- * our cache. */
-STATIC uint32_t
-dns_get_expiry_ttl(uint32_t ttl)
-{
-  if (ttl < MIN_DNS_TTL_TO_BELIEVE)
-    return MIN_DNS_TTL_TO_BELIEVE;
-  else if (ttl > MAX_DNS_TTL_TO_BELIEVE)
-    return MAX_DNS_TTL_TO_BELIEVE;
-  else
-    return ttl;
+    return MAX_DNS_TTL_AT_EXIT;
 }
 
 /** Helper: free storage held by an entry in the DNS cache. */
@@ -1319,7 +1307,7 @@ make_pending_resolve_cached(cached_resolve_t *resolve)
         resolve->ttl_hostname < ttl)
       ttl = resolve->ttl_hostname;
 
-    set_expiry(new_resolve, time(NULL) + dns_get_expiry_ttl(ttl));
+    set_expiry(new_resolve, time(NULL) + dns_clip_ttl(ttl));
   }
 
   assert_cache_ok();

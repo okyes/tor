@@ -16,32 +16,11 @@ NS(test_main)(void *arg)
 {
   (void)arg;
 
-  uint32_t ttl_mid = MIN_DNS_TTL_TO_REPORT / 2 + MAX_DNS_TTL_TO_REPORT / 2;
+  uint32_t ttl_mid = MIN_DNS_TTL_AT_EXIT / 2 + MAX_DNS_TTL_AT_EXIT / 2;
 
-  tt_int_op(dns_clip_ttl(MIN_DNS_TTL_TO_REPORT - 1),==,MIN_DNS_TTL_TO_REPORT);
-  tt_int_op(dns_clip_ttl(ttl_mid),==,MAX_DNS_TTL_TO_REPORT);
-  tt_int_op(dns_clip_ttl(MAX_DNS_TTL_TO_REPORT + 1),==,MAX_DNS_TTL_TO_REPORT);
-
-  done:
-  return;
-}
-
-#undef NS_SUBMODULE
-
-#define NS_SUBMODULE expiry_ttl
-
-static void
-NS(test_main)(void *arg)
-{
-  (void)arg;
-
-  uint32_t ttl_mid = MIN_DNS_TTL_TO_BELIEVE / 2 + MAX_DNS_TTL_TO_BELIEVE / 2;
-
-  tt_int_op(dns_get_expiry_ttl(MIN_DNS_TTL_TO_BELIEVE - 1),
-            ==,MIN_DNS_TTL_TO_BELIEVE);
-  tt_int_op(dns_get_expiry_ttl(ttl_mid),==,ttl_mid);
-  tt_int_op(dns_get_expiry_ttl(MAX_DNS_TTL_TO_BELIEVE + 1),==,
-            MAX_DNS_TTL_TO_BELIEVE);
+  tt_int_op(dns_clip_ttl(MIN_DNS_TTL_AT_EXIT - 1),==,MIN_DNS_TTL_AT_EXIT);
+  tt_int_op(dns_clip_ttl(ttl_mid),==,MAX_DNS_TTL_AT_EXIT);
+  tt_int_op(dns_clip_ttl(MAX_DNS_TTL_AT_EXIT + 1),==,MAX_DNS_TTL_AT_EXIT);
 
   done:
   return;
@@ -751,7 +730,6 @@ NS(test_main)(void *arg)
 
 struct testcase_t dns_tests[] = {
    TEST_CASE(clip_ttl),
-   TEST_CASE(expiry_ttl),
    TEST_CASE(resolve),
    TEST_CASE_ASPECT(resolve_impl, addr_is_ip_no_need_to_resolve),
    TEST_CASE_ASPECT(resolve_impl, non_exit),
