@@ -1,0 +1,30 @@
+version: 1.0.{build}
+branches:
+  only:
+  - /^appveyor-.*$/
+install:
+- cmd: >-
+    set MSYSTEM=MINGW64
+
+    set CHERE_INVOKING=enabled_from_arguments
+
+    C:\msys64\usr\bin\bash --login -c 'pacman -S --noconfirm mingw-w64-x86_64-libevent'
+build_script:
+- cmd: >-
+    echo %MSYSTEM%
+
+    echo %CHERE_INVOKING%
+
+    C:\msys64\usr\bin\bash --login -c './autogen.sh'
+
+    C:\msys64\usr\bin\bash --login -c './configure'
+
+    C:\msys64\usr\bin\bash --login -c 'mingw32-make -j3'
+artifacts:
+- path: src\or\tor.exe
+- path: C:\msys64\mingw64\bin\libeay32.dll
+- path: C:\msys64\mingw64\bin\libevent-2-0-5.dll
+- path: C:\msys64\mingw64\bin\ssleay32.dll
+- path: C:\msys64\mingw64\bin\zlib1.dll
+- path: C:\msys64\mingw64\bin\libssp-0.dll
+- path: C:\msys64\mingw64\bin\libwinpthread-1.dll
