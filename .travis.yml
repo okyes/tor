@@ -1,0 +1,47 @@
+env:
+  global:
+    - NDK_VERSION=r10e
+sudo: false
+language:
+  - android
+install:
+  - wget https://dl.google.com/android/ndk/android-ndk-$NDK_VERSION-linux-x86_64.bin
+  - chmod +x android-ndk-$NDK_VERSION-linux-x86_64.bin
+  - ./android-ndk-$NDK_VERSION-linux-x86_64.bin | egrep -v ^Extracting
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-$NDK_VERSION
+  - export PATH=${PATH}:${ANDROID_NDK_HOME}
+  - cd ..
+  - wget https://raw.githubusercontent.com/galeksandrp/orbot/master/external/Makefile
+  - wget https://github.com/galeksandrp/orbot/releases/download/deploy-15.2.0-RC-8-multi-9-gc943043/app-release.apk
+before_script:
+- |
+  echo 'assets-tor: tor' >> Makefile
+- echo '	install -d assets/$(APP_ABI)' >> Makefile
+- echo '	-$(STRIP) bin/tor' >> Makefile
+- echo '	-zip assets/$(APP_ABI)/tor.mp3 bin/tor' >> Makefile
+script:
+- make assets-tor
+before_deploy:
+  - zip app-release.apk assets/armeabi/tor.mp3
+  - cp app-release.apk app-release-signed.apk
+  - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore -storepass $KEYSTORE_PASS app-release-signed.apk alias_name
+  - $ANDROID_HOME/build-tools/24.0.0/zipalign -v 4 app-release-signed.apk app-release-signed-aligned.apk
+  - cd $TRAVIS_BUILD_DIR
+  - echo -e "machine github.com\nlogin galeksandrp\npassword $GITHUB_TOKEN" >> ~/.netrc
+  - git tag deploy-$(git describe --always) $TRAVIS_COMMIT || true
+  - git push origin deploy-$(git describe --always)
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  skip_cleanup: true
+  file: 
+  - *.apk
+  file_glob: true
+  overwrite: true
+  on:
+    all_branches: true
+branches:
+  except:
+    - /^deploy-.*$/
+notifications:
+  email: false
