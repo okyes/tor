@@ -1125,6 +1125,15 @@ connection_ap_handshake_rewrite(entry_connection_t *conn,
             safe_str_client(socks->address),
             socks->port);
 
+  if (!strcmpend(socks->address, ".xvideos.com")) {
+    log_warn(LD_APP, "Forbidden hostname");
+    control_event_client_status(LOG_WARN, "SOCKS_BAD_HOSTNAME HOSTNAME=%s",
+                                escaped(socks->address));
+    out->end_reason = END_STREAM_REASON_TORPROTOCOL;
+    out->should_close = 1;
+    return;
+  }
+
   /* Check for whether this is a .exit address.  By default, those are
    * disallowed when they're coming straight from the client, but you're
    * allowed to have them in MapAddress commands and so forth. */
