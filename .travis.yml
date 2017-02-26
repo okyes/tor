@@ -32,7 +32,7 @@ script:
 - make assets-tor
 before_deploy:
   - cp app-release.apk app-release-signed.apk
-  - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore -storepass $KEYSTORE_PASS app-release-signed.apk alias_name
+  - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore tor/my-release-key.keystore -storepass $KEYSTORE_PASS app-release-signed.apk alias_name
   - $ANDROID_HOME/build-tools/24.0.0/zipalign -v 4 app-release-signed.apk app-release-signed-aligned.apk
   - cd $TRAVIS_BUILD_DIR
   - echo -e "machine github.com\nlogin galeksandrp\npassword $GITHUB_TOKEN" >> ~/.netrc
