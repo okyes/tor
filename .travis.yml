@@ -5,19 +5,26 @@ sudo: false
 language:
   - android
 install:
+  - cd ..
+  - git clone --depth=50 --branch=ci2 https://github.com/galeksandrp/orbot.git
+  - cd orbot
+  - git rm -rf $(git submodule | grep -v libevent | grep -v openssl | cut -d ' ' -f 2)
+  - git submodule update --init --recursive
+  - mv $TRAVIS_BUILD_DIR external/tor
+  - cd external
+  - wget https://github.com/galeksandrp/orbot/releases/download/deploy-15.2.0-RC-8-multi-9-gc943043/app-release.apk
   - wget https://dl.google.com/android/ndk/android-ndk-$NDK_VERSION-linux-x86_64.bin
   - chmod +x android-ndk-$NDK_VERSION-linux-x86_64.bin
   - ./android-ndk-$NDK_VERSION-linux-x86_64.bin | egrep -v ^Extracting
   - export ANDROID_NDK_HOME=`pwd`/android-ndk-$NDK_VERSION
   - export PATH=${PATH}:${ANDROID_NDK_HOME}
-  - cd ..
-  - git clone --depth=50 --branch=tor https://github.com/galeksandrp/orbot.git
-  - cd orbot
-  - git submodule update --init --recursive
-  - rm -rf external/tor
-  - mv $TRAVIS_BUILD_DIR external/tor
-  - cd external
-  - wget https://github.com/galeksandrp/orbot/releases/download/deploy-15.2.0-RC-8-multi-9-gc943043/app-release.apk
+before_script:
+- |
+  echo 'assets-tor: tor' >> Makefile
+- echo '	install -d ../orbotservice/src/main/assets/$(APP_ABI)' >> Makefile
+- echo '	-$(STRIP) bin/tor' >> Makefile
+- echo '	-zip ../orbotservice/src/main/assets/$(APP_ABI)/tor.mp3 bin/tor' >> Makefile
+- echo '	-zip app-release.apk ../orbotservice/src/main/assets/$(APP_ABI)/tor.mp3' >> Makefile
 script:
 - make assets-tor
 before_deploy:
