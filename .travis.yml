@@ -5,6 +5,8 @@ sudo: false
 language:
   - android
 before_install:
+- ls $ANDROID_HOME/build-tools
+- exit 0
 - openssl aes-256-cbc -K $encrypted_4a609b7f3125_key -iv $encrypted_4a609b7f3125_iv
   -in my-release-key.keystore.enc -out my-release-key.keystore -d
 install:
