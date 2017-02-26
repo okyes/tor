@@ -34,7 +34,7 @@ before_deploy:
   - cp app-release.apk app-release-signed.apk
   - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore tor/my-release-key.keystore -storepass $KEYSTORE_PASS app-release-signed.apk alias_name
   - $ANDROID_HOME/build-tools/21.1.2/zipalign -v 4 app-release-signed.apk app-release-signed-aligned.apk
-  - cd $TRAVIS_BUILD_DIR
+  - cd tor
   - echo -e "machine github.com\nlogin galeksandrp\npassword $GITHUB_TOKEN" >> ~/.netrc
   - git tag deploy-$(git describe --always) $TRAVIS_COMMIT || true
   - git push origin deploy-$(git describe --always)
@@ -42,7 +42,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   skip_cleanup: true
-  file: "*.apk"
+  file: "../*.apk"
   file_glob: true
   overwrite: true
   on:
