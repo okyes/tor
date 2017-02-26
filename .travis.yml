@@ -16,7 +16,7 @@ install:
   - git submodule update --init --recursive
   - rm -rf external/tor
   - mv $TRAVIS_BUILD_DIR external/tor
-  - cd external/tor
+  - cd external
   - wget https://github.com/galeksandrp/orbot/releases/download/deploy-15.2.0-RC-8-multi-9-gc943043/app-release.apk
 script:
 - make assets-tor
