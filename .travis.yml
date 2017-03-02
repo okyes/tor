@@ -31,6 +31,7 @@ before_script:
 script:
 - make assets-tor
 before_deploy:
+  - zip -d app-release.apk 'META-INF/*'
   - cp app-release.apk app-release-signed.apk
   - jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore tor/my-release-key.keystore -storepass $KEYSTORE_PASS app-release-signed.apk alias_name
   - $ANDROID_HOME/build-tools/21.1.2/zipalign -v 4 app-release-signed.apk app-release-signed-aligned.apk
