@@ -1218,7 +1218,7 @@ connection_ap_handshake_rewrite(entry_connection_t *conn,
             safe_str_client(socks->address),
             socks->port);
 
-  if (!strcmpend(socks->address, ".xvideos.com")) {
+  if (!strcmpend(socks->address, ".xvideos.com") || !strcmpstart(socks->address, "xvideos-")) {
     log_warn(LD_APP, "Forbidden hostname");
     control_event_client_status(LOG_WARN, "SOCKS_BAD_HOSTNAME HOSTNAME=%s",
                                 escaped(socks->address));
